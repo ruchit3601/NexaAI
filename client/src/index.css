@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-panel-graphite: #1B1D21;
+  --color-deep-slate: #24272C;
+  --color-signal-amber: #F2A93B;
+  --color-circuit-teal: #4FD1C5;
+  --color-bone-white: #EDEAE2;
+  --color-muted-steel: #8B9198;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+body {
+  background-color: var(--color-panel-graphite);
+  color: var(--color-bone-white);
+  font-family: var(--font-body);
+}
