@@ -1,4 +1,4 @@
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 const fs = require('fs');
 const { chunkText } = require('../services/chunker');
 const { storeChunks, queryRelevantChunks } = require('../services/vectorStore');
@@ -8,12 +8,15 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 async function uploadDocument(req, res) {
+  let parser;
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     const dataBuffer = fs.readFileSync(req.file.path);
-    const parsed = await pdfParse(dataBuffer);
-    const chunks = chunkText(parsed.text);
+    parser = new PDFParse({ data: dataBuffer });
+    const result = await parser.getText();
+
+    const chunks = chunkText(result.text);
     const docId = req.file.filename;
 
     const count = await storeChunks('documents', chunks, docId);
@@ -23,6 +26,8 @@ async function uploadDocument(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to process document' });
+  } finally {
+    if (parser) await parser.destroy();
   }
 }
 
