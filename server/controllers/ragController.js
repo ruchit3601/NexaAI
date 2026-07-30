@@ -5,8 +5,7 @@ const { storeChunks, queryRelevantChunks } = require('../services/vectorStore');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
+const chatModel = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 async function uploadDocument(req, res) {
   let parser;
   try {
@@ -45,6 +44,11 @@ async function askQuestion(req, res) {
     res.json({ answer: result.response.text(), sources: relevantChunks });
   } catch (err) {
     console.error(err);
+    if (err.status === 429) {
+      return res.status(429).json({
+        error: 'Rate limit reached on the free tier. Please wait a moment and try again.',
+      });
+    }
     res.status(500).json({ error: 'Failed to answer question' });
   }
 }
