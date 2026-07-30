@@ -9,7 +9,7 @@ export default function Hero() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <section className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+      <section className="flex-1 flex flex-col items-center justify-center px-10 py-16">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -27,9 +27,9 @@ export default function Hero() {
           A hands-on workbench for AI capabilities — plug in, try it live, see how it works.
         </motion.p>
 
-        <div className="relative w-full max-w-6xl flex justify-center">
+        <div className="relative w-full max-w-[1400px]">
           <ConnectionLines count={modules.length} />
-          <div className="flex flex-wrap justify-center gap-6 mt-36">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-36">
             {modules.map((module, i) => (
               <ModuleCard key={module.id} module={module} index={i} />
             ))}

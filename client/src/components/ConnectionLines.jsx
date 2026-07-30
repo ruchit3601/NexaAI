@@ -1,19 +1,18 @@
 import { motion } from "framer-motion";
 
 export default function ConnectionLines({ count }) {
-  const width = 900;
+  const width = 1400;
   const hubX = width / 2;
   const hubY = 20;
   const cardY = 140;
-  const spacing = width / (count + 1);
 
   return (
     <svg
       viewBox={`0 0 ${width} 160`}
-      className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl pointer-events-none overflow-visible"
+      className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1400px] pointer-events-none overflow-visible"
     >
       {Array.from({ length: count }).map((_, i) => {
-        const targetX = spacing * (i + 1);
+        const targetX = (width / count) * (i + 0.5);
         return (
           <g key={i}>
             <motion.line
@@ -33,10 +32,7 @@ export default function ConnectionLines({ count }) {
           </g>
         );
       })}
-      <motion.circle
-        cx={hubX} cy={hubY} r="10" fill="#F2A93B"
-        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.3 }}
-      />
+      <motion.circle cx={hubX} cy={hubY} r="10" fill="#F2A93B" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.3 }} />
       <motion.circle
         cx={hubX} cy={hubY} r="10" fill="none" stroke="#F2A93B" strokeWidth="1.5"
         initial={{ scale: 1, opacity: 0.6 }}
