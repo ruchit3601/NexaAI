@@ -1,0 +1,47 @@
+const pdfParse = require('pdf-parse');
+const fs = require('fs');
+const { chunkText } = require('../services/chunker');
+const { storeChunks, queryRelevantChunks } = require('../services/vectorStore');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+async function uploadDocument(req, res) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const dataBuffer = fs.readFileSync(req.file.path);
+    const parsed = await pdfParse(dataBuffer);
+    const chunks = chunkText(parsed.text);
+    const docId = req.file.filename;
+
+    const count = await storeChunks('documents', chunks, docId);
+    fs.unlinkSync(req.file.path);
+
+    res.json({ docId, chunksStored: count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to process document' });
+  }
+}
+
+async function askQuestion(req, res) {
+  try {
+    const { question } = req.body;
+    if (!question) return res.status(400).json({ error: 'No question provided' });
+
+    const relevantChunks = await queryRelevantChunks('documents', question);
+    const context = relevantChunks.join('\n\n');
+
+    const prompt = `Answer the question using only the context below. If the answer isn't in the context, say so.\n\nContext:\n${context}\n\nQuestion: ${question}`;
+    const result = await chatModel.generateContent(prompt);
+
+    res.json({ answer: result.response.text(), sources: relevantChunks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to answer question' });
+  }
+}
+
+module.exports = { uploadDocument, askQuestion };

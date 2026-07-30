@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon index.js"
-},
+    "dev": "nodemon index.js"
+  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@chroma-core/default-embed": "^0.1.9"
+  }
 }

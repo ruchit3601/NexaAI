@@ -4,11 +4,15 @@ import ModuleCard from "./ModuleCard";
 import ConnectionLines from "./ConnectionLines";
 import Navbar from "./Navbar";
 import StatusBar from "./StatusBar";
+import AmbientBackground from "./AmbientBackground";
+import Particles from "./Particles";
 
 export default function Hero() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <AmbientBackground />
+      <Particles />
       <section className="flex-1 flex flex-col items-center justify-center px-10 py-16">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}

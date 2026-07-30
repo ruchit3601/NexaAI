@@ -6,6 +6,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const ragRoutes = require('./routes/rag');
+app.use('/api/rag', ragRoutes);
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
