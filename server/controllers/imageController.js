@@ -5,8 +5,11 @@ async function createImage(req, res) {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
-    const { base64, mimeType } = await generateImage(prompt);
-    res.json({ image: base64, mimeType });
+    const { url } = await generateImage(prompt);
+
+res.json({
+  image: url,
+});
   } catch (err) {
     console.error(err);
     if (err.status === 429) {

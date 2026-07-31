@@ -2,14 +2,21 @@ const MODEL = 'gemini-2.5-flash-image';
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 async function generateImage(prompt) {
-  const response = await fetch(`${API_URL}?key=${process.env.GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseModalities: ['IMAGE'] },
-    }),
-  });
+  if (!prompt) {
+    throw new Error("Prompt is required");
+  }
+
+  const seed = Math.floor(Math.random() * 100000);
+
+  const imageUrl = 
+    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}`;
+
+  return {
+    url: imageUrl,
+  };
+// }
+
+// module.exports = { generateImage };
 
   const data = await response.json();
 
