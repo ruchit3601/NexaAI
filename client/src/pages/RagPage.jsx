@@ -10,11 +10,12 @@ const API_BASE = "http://localhost:5000/api/rag";
 export default function RagPage() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState(null);
+const [uploadStatus, setUploadStatus] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [asking, setAsking] = useState(false);
+  const [docId, setDocId] = useState(null);
 
   async function handleUpload(e) {
     const selected = e.target.files[0];
@@ -27,9 +28,14 @@ export default function RagPage() {
     formData.append("file", selected);
 
     try {
-      const res = await fetch(`${API_BASE}/upload`, { method: "POST", body: formData });
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
+      //   setUploadStatus({ ok: true, chunks: data.chunksStored });
+      setDocId(data.docId);
       setUploadStatus({ ok: true, chunks: data.chunksStored });
     } catch (err) {
       setUploadStatus({ ok: false, message: err.message });
@@ -51,11 +57,15 @@ export default function RagPage() {
       const res = await fetch(`${API_BASE}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: userMsg.text }),
+        // body: JSON.stringify({ question: userMsg.text }),
+        body: JSON.stringify({ question: userMsg.text, docId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to get an answer");
-      setMessages((prev) => [...prev, { role: "assistant", text: data.answer, sources: data.sources }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: data.answer, sources: data.sources },
+      ]);
     } catch (err) {
       setMessages((prev) => [...prev, { role: "error", text: err.message }]);
     } finally {
@@ -77,14 +87,21 @@ export default function RagPage() {
       </button>
 
       <h1 className="font-display text-3xl font-bold mb-2">Document Q&A</h1>
-      <p className="text-muted-steel font-mono text-sm mb-8">RAG — retrieval-augmented generation over your own PDFs</p>
+      <p className="text-muted-steel font-mono text-sm mb-8">
+        RAG — retrieval-augmented generation over your own PDFs
+      </p>
 
       <label className="border border-dashed border-white/15 rounded-lg p-6 flex flex-col items-center gap-2 cursor-pointer hover:border-cyan-glow/50 transition-colors mb-4">
         <Upload size={20} className="text-cyan-glow" />
         <span className="text-sm text-muted-steel">
           {file ? file.name : "Click to upload a PDF"}
         </span>
-        <input type="file" accept="application/pdf" onChange={handleUpload} className="hidden" />
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleUpload}
+          className="hidden"
+        />
       </label>
 
       {uploading && (
@@ -98,7 +115,9 @@ export default function RagPage() {
         </p>
       )}
       {uploadStatus?.ok === false && (
-        <p className="text-sm text-red-400 font-mono mb-4">✕ {uploadStatus.message}</p>
+        <p className="text-sm text-red-400 font-mono mb-4">
+          ✕ {uploadStatus.message}
+        </p>
       )}
 
       <div className="flex-1 flex flex-col gap-4 mb-4 overflow-y-auto">
@@ -111,16 +130,20 @@ export default function RagPage() {
               msg.role === "user"
                 ? "bg-glass-surface self-end ml-12"
                 : msg.role === "error"
-                ? "bg-red-500/10 text-red-300"
-                : "bg-glass-surface backdrop-blur-md mr-12"
+                  ? "bg-red-500/10 text-red-300"
+                  : "bg-glass-surface backdrop-blur-md mr-12"
             }`}
           >
             {msg.text}
             {msg.sources && (
               <details className="mt-2 text-xs text-muted-steel font-mono">
-                <summary className="cursor-pointer">Sources ({msg.sources.length})</summary>
+                <summary className="cursor-pointer">
+                  Sources ({msg.sources.length})
+                </summary>
                 {msg.sources.map((s, j) => (
-                  <p key={j} className="mt-1 opacity-70 line-clamp-2">{s.slice(0, 150)}...</p>
+                  <p key={j} className="mt-1 opacity-70 line-clamp-2">
+                    {s.slice(0, 150)}...
+                  </p>
                 ))}
               </details>
             )}
@@ -140,7 +163,11 @@ export default function RagPage() {
           disabled={asking}
           className="bg-cyan-glow/20 border border-cyan-glow/40 rounded-lg px-4 flex items-center justify-center hover:bg-cyan-glow/30 transition-colors disabled:opacity-50"
         >
-          {asking ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+          {asking ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Send size={16} />
+          )}
         </button>
       </form>
     </div>

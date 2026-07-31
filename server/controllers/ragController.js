@@ -32,10 +32,11 @@ async function uploadDocument(req, res) {
 
 async function askQuestion(req, res) {
   try {
-    const { question } = req.body;
+    const { question, docId } = req.body;
     if (!question) return res.status(400).json({ error: 'No question provided' });
 
-    const relevantChunks = await queryRelevantChunks('documents', question);
+    const relevantChunks = await queryRelevantChunks('documents', question, docId);
+    
     const context = relevantChunks.join('\n\n');
 
     const prompt = `Answer the question using only the context below. If the answer isn't in the context, say so.\n\nContext:\n${context}\n\nQuestion: ${question}`;
