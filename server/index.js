@@ -12,6 +12,10 @@ const imageRoutes = require('./routes/image');
 app.use('/api/image', imageRoutes);
 const sttRoutes = require('./routes/stt');
 app.use('/api/stt', sttRoutes);
+// const ttsRoutes = require('./routes/tts');
+// app.use('/api/tts', ttsRoutes);
+const visionRoutes = require('./routes/vision');
+app.use('/api/vision', visionRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

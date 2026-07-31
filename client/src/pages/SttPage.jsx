@@ -32,7 +32,7 @@ export default function SttPage() {
       recorder.start();
       mediaRecorderRef.current = recorder;
       setRecording(true);
-    } catch (err) {
+    } catch  {
       setError("Microphone access denied or unavailable.");
     }
   }
