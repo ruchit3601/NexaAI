@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { ArrowLeft, Upload, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Upload, Loader2 } from "lucide-react";
+import PageLayout from "../components/PageLayout";
 
 const API_BASE = "http://localhost:5000/api/vision";
 
 export default function VisionPage() {
-  const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [prompt, setPrompt] = useState("");
@@ -44,27 +43,14 @@ export default function VisionPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-10 max-w-2xl mx-auto">
-      <button
-        onClick={() => navigate("/")}
-        className="flex items-center gap-2 text-ink-muted hover:text-ink transition-colors text-sm mb-8 w-fit"
-      >
-        <ArrowLeft size={16} />
-        Back to Lab
-      </button>
-
-      <h1 className="text-3xl font-semibold mb-2">Vision</h1>
-      <p className="text-ink-muted font-mono text-sm mb-10">Gemini — image understanding</p>
-
+    <PageLayout title="Vision" subtitle="Gemini — image understanding">
       <label className="border border-dashed border-border rounded-md p-6 flex flex-col items-center gap-2 cursor-pointer hover:border-border-hover transition-colors mb-4">
         <Upload size={18} className="text-ink-muted" />
         <span className="text-sm text-ink-muted">{file ? file.name : "Click to upload an image"}</span>
         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </label>
 
-      {preview && (
-        <img src={preview} alt="Preview" className="rounded-md border border-border mb-4 max-h-80 object-contain" />
-      )}
+      {preview && <img src={preview} alt="Preview" className="rounded-md border border-border mb-4 max-h-80 object-contain" />}
 
       {file && (
         <div className="flex gap-2 mb-4">
@@ -91,6 +77,6 @@ export default function VisionPage() {
           <p className="text-sm leading-relaxed">{description}</p>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }

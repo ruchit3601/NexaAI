@@ -1,11 +1,10 @@
 import { useState, useRef } from "react";
-import { ArrowLeft, Mic, Square, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Mic, Square, Loader2 } from "lucide-react";
+import PageLayout from "../components/PageLayout";
 
 const API_BASE = "http://localhost:5000/api/stt";
 
 export default function SttPage() {
-  const navigate = useNavigate();
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -32,7 +31,7 @@ export default function SttPage() {
       recorder.start();
       mediaRecorderRef.current = recorder;
       setRecording(true);
-    } catch  {
+    } catch {
       setError("Microphone access denied or unavailable.");
     }
   }
@@ -60,26 +59,13 @@ export default function SttPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-10 max-w-2xl mx-auto">
-      <button
-        onClick={() => navigate("/")}
-        className="flex items-center gap-2 text-ink-muted hover:text-ink transition-colors text-sm mb-8 w-fit"
-      >
-        <ArrowLeft size={16} />
-        Back to Lab
-      </button>
-
-      <h1 className="text-3xl font-semibold mb-2">Speech to Text</h1>
-      <p className="text-ink-muted font-mono text-sm mb-10">Groq Whisper — real-time audio transcription</p>
-
+    <PageLayout title="Speech to Text" subtitle="Groq Whisper — real-time audio transcription">
       <div className="flex flex-col items-center gap-6 py-16">
         <button
           onClick={recording ? stopRecording : startRecording}
           disabled={transcribing}
           className={`w-20 h-20 rounded-full flex items-center justify-center border transition-colors ${
-            recording
-              ? "bg-red-500/10 border-red-500/40 text-red-400"
-              : "bg-surface border-border hover:border-border-hover text-ink"
+            recording ? "bg-red-500/10 border-red-500/40 text-red-400" : "bg-surface border-border hover:border-border-hover text-ink"
           } disabled:opacity-50`}
         >
           {transcribing ? <Loader2 size={24} className="animate-spin" /> : recording ? <Square size={22} /> : <Mic size={24} />}
@@ -96,6 +82,6 @@ export default function SttPage() {
           <p className="text-sm leading-relaxed">{transcript}</p>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }

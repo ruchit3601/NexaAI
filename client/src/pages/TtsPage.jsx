@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Volume2, Square } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Volume2, Square } from "lucide-react";
+import PageLayout from "../components/PageLayout";
 
 export default function TtsPage() {
-  const navigate = useNavigate();
   const [text, setText] = useState("");
   const [voices, setVoices] = useState([]);
   const [voiceIndex, setVoiceIndex] = useState(0);
@@ -24,7 +23,6 @@ export default function TtsPage() {
     if (!text.trim()) return;
 
     window.speechSynthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(text);
     if (voices[voiceIndex]) utterance.voice = voices[voiceIndex];
     utterance.onstart = () => setSpeaking(true);
@@ -41,18 +39,7 @@ export default function TtsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-10 max-w-2xl mx-auto">
-      <button
-        onClick={() => navigate("/")}
-        className="flex items-center gap-2 text-ink-muted hover:text-ink transition-colors text-sm mb-8 w-fit"
-      >
-        <ArrowLeft size={16} />
-        Back to Lab
-      </button>
-
-      <h1 className="text-3xl font-semibold mb-2">Text to Speech</h1>
-      <p className="text-ink-muted font-mono text-sm mb-10">Browser-native Web Speech API — zero API cost, works fully offline</p>
-
+    <PageLayout title="Text to Speech" subtitle="Browser-native Web Speech API — zero API cost, works fully offline">
       <form onSubmit={handleSpeak} className="flex flex-col gap-4">
         <textarea
           value={text}
@@ -61,7 +48,6 @@ export default function TtsPage() {
           placeholder="Type something to hear it spoken..."
           className="bg-surface border border-border rounded-md px-4 py-3 text-sm outline-none focus:border-border-hover transition-colors resize-none"
         />
-
         {voices.length > 0 && (
           <select
             value={voiceIndex}
@@ -73,7 +59,6 @@ export default function TtsPage() {
             ))}
           </select>
         )}
-
         <div className="flex gap-2">
           <button
             type="submit"
@@ -95,6 +80,6 @@ export default function TtsPage() {
           )}
         </div>
       </form>
-    </div>
+    </PageLayout>
   );
 }
