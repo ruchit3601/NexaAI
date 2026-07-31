@@ -7,7 +7,7 @@ export default function Navbar() {
         AI_TOOLS_LAB
       </span>
       <a
-        href="https://github.com/ruchit3601/ai-tools-lab"
+        href="https://github.com/ruchit3601/NexaAI"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-2 text-muted-steel hover:text-bone-white transition-colors text-sm"
