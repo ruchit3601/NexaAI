@@ -10,6 +10,8 @@ const ragRoutes = require('./routes/rag');
 app.use('/api/rag', ragRoutes);
 const imageRoutes = require('./routes/image');
 app.use('/api/image', imageRoutes);
+const sttRoutes = require('./routes/stt');
+app.use('/api/stt', sttRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
