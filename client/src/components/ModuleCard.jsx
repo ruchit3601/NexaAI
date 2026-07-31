@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function ModuleCard({ module, index }) {
   const isOnline = module.status === "ONLINE";
+  const navigate = useNavigate();
 
   return (
     <motion.div
@@ -10,7 +12,9 @@ export default function ModuleCard({ module, index }) {
       whileHover={{ y: -4, boxShadow: `0 0 20px ${module.accent}33` }}
       transition={{ delay: 0.6 + index * 0.15, duration: 0.4 }}
       style={{ borderLeftColor: module.accent }}
-className="bg-glass-surface backdrop-blur-md rounded-lg p-5 w-full border-l-4 border-y border-r border-white/5 flex flex-col gap-3 cursor-pointer"    >
+      onClick={() => module.route && navigate(module.route)}
+      className="bg-glass-surface backdrop-blur-md rounded-lg p-5 w-full border-l-4 border-y border-r border-white/5 flex flex-col gap-3 cursor-pointer"
+    >
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs text-muted-steel">{module.tag}</span>
         <span className="flex items-center gap-1.5">
