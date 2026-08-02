@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Upload, Send, Loader2 } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
-const API_BASE = "http://localhost:5000/api/rag";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/rag`;
 
 export default function RagPage() {
   const [file, setFile] = useState(null);

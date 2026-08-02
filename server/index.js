@@ -3,7 +3,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? 'https://your-deployed-frontend-url.vercel.app'
+    : 'http://localhost:5173',
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const ragRoutes = require('./routes/rag');

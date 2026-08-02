@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Mic, Square, Loader2 } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
-const API_BASE = "http://localhost:5000/api/stt";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/stt`;
 
 export default function SttPage() {
   const [recording, setRecording] = useState(false);

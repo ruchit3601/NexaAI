@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Sparkles, Wand2, ImageIcon } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
-const API_BASE = "http://localhost:5000/api/image";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/image`;
 
 const loadingMessages = [
   "Understanding your vision...",

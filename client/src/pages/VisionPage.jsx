@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Upload, Loader2 } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 
-const API_BASE = "http://localhost:5000/api/vision";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/vision`;
 
 export default function VisionPage() {
   const [file, setFile] = useState(null);
