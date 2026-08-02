@@ -3,10 +3,19 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://your-actual-vercel-url.vercel.app', // replace with your real Vercel URL once deployed
+];
+
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? 'https://your-deployed-frontend-url.vercel.app'
-    : 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
 };
 app.use(cors(corsOptions));
 app.use(express.json());
