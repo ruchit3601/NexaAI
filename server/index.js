@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://nexa-ai-one-opal.vercel.app/', // replace with your real Vercel URL once deployed
+  'https://nexa-ai-one-opal.vercel.app',
 ];
 
 const corsOptions = {
@@ -17,6 +17,7 @@ const corsOptions = {
     }
   },
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
