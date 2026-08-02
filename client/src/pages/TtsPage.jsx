@@ -10,6 +10,7 @@ export default function TtsPage() {
   const utteranceRef = useRef(null);
 
   useEffect(() => {
+    if(!window.speechSynthesis) return;
     function loadVoices() {
       const available = window.speechSynthesis.getVoices();
       if (available.length) setVoices(available);
@@ -20,7 +21,7 @@ export default function TtsPage() {
 
   function handleSpeak(e) {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() || !window.speechSynthesis) return;
 
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
