@@ -1,37 +1,43 @@
-const { ChromaClient } = require('chromadb');
 const { embedBatch, embedText } = require('./embeddings');
 
-const client = new ChromaClient({ path: 'http://localhost:8000' });
+// In-memory store: array of { docId, chunk, embedding }
+// Resets whenever the server restarts — acceptable for this project's
+// per-session usage pattern (see SECURITY.md-style note below).
+let store = [];
 
-async function getOrCreateCollection(name) {
-  return client.getOrCreateCollection({ name });
+function cosineSimilarity(a, b) {
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
 async function storeChunks(collectionName, chunks, docId) {
-  const collection = await getOrCreateCollection(collectionName);
   const embeddings = await embedBatch(chunks);
-  const ids = chunks.map((_, i) => `${docId}-chunk-${i}`);
 
-  await collection.add({
-    ids,
-    embeddings,
-    documents: chunks,
-    metadatas: chunks.map(() => ({ docId })),
+  chunks.forEach((chunk, i) => {
+    store.push({ docId, chunk, embedding: embeddings[i] });
   });
 
-  return ids.length;
+  return chunks.length;
 }
 
 async function queryRelevantChunks(collectionName, question, docId, topK = 4) {
-  const collection = await getOrCreateCollection(collectionName);
   const queryEmbedding = await embedText(question);
 
-  const results = await collection.query({
-    queryEmbeddings: [queryEmbedding],
-    nResults: topK,
-    where: docId ? { docId } : undefined,
-  });
+  const candidates = docId ? store.filter((entry) => entry.docId === docId) : store;
 
-  return results.documents[0];
+  const scored = candidates.map((entry) => ({
+    chunk: entry.chunk,
+    score: cosineSimilarity(queryEmbedding, entry.embedding),
+  }));
+
+  scored.sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, topK).map((entry) => entry.chunk);
 }
+
 module.exports = { storeChunks, queryRelevantChunks };
