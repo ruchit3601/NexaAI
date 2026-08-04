@@ -1,27 +1,30 @@
-name: Playwright Tests          # label shown in the GitHub Actions tab
+name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]  # run when code is pushed to main or master
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ]  # also run when a PR targets these branches
+    branches: [ main, master ]
 jobs:
-  test:                         # this job is called "test"
-    timeout-minutes: 60         # kill the job if it runs over 60 min
-    runs-on: ubuntu-latest       # the VM image GitHub spins up to run this
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
     steps:
-    - uses: actions/checkout@v4  # step 1: pull your repo code onto that VM
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: lts/*     # step 2: install latest LTS Node
+        node-version: lts/*
     - name: Install dependencies
-      run: npm ci                # step 3: install deps (npm ci = clean, uses package-lock exactly)
+      run: npm ci
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps  # step 4: Playwright needs real browser binaries, not just the npm package
+      run: npx playwright install --with-deps
     - name: Run Playwright tests
-      run: npx playwright test   # step 5: actually run the test suite
+      run: npx playwright test
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}    # step 6: even if tests failed, upload the HTML report
+      if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        path: playwright-report/
-        retention-days: 30       # keep the report for 30 days, then auto-delete
+        path: client/playwright-report/
+        retention-days: 30
