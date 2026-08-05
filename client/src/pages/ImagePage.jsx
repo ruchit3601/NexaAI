@@ -33,29 +33,42 @@ export default function ImagePage() {
   }, [loading]);
 
   async function handleGenerate(e) {
-    e.preventDefault();
-    if (!prompt.trim()) return;
+  e.preventDefault();
+  if (!prompt.trim()) return;
 
-    setLoading(true);
-    setError("");
-    setImage(null);
-    setLoadingMessage(loadingMessages[0]);
+  setLoading(true);
+  setError("");
+  setImage(null);
+  setLoadingMessage(loadingMessages[0]);
 
-    try {
-      const response = await fetch(`${API_BASE}/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Image generation failed");
-      setImage(data.image);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  await tryGenerate(prompt, true);
+}
+
+async function tryGenerate(promptText, allowRetry) {
+  try {
+    const response = await fetch(`${API_BASE}/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: promptText }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 503 && allowRetry) {
+        setLoadingMessage("Model is warming up — retrying in 20s...");
+        await new Promise((r) => setTimeout(r, 20000));
+        return tryGenerate(promptText, false); // one retry only
+      }
+      throw new Error(data.error || "Image generation failed");
     }
+
+    setImage(data.image);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <PageLayout title="AI Image Studio" subtitle="Powered by Pollinations — free, open-source text-to-image">

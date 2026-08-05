@@ -1,40 +1,31 @@
-const MODEL = 'gemini-2.5-flash-image';
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const HF_API_URL = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell";
 
 async function generateImage(prompt) {
   if (!prompt) {
     throw new Error("Prompt is required");
   }
 
-  const seed = Math.floor(Math.random() * 100000);
-
-  const imageUrl = 
-    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}`;
-
-  return {
-    url: imageUrl,
-  };
-// }
-
-// module.exports = { generateImage };
-
-  const data = await response.json();
+  const response = await fetch(HF_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.HF_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ inputs: prompt }),
+  });
 
   if (!response.ok) {
-    const err = new Error(data.error?.message || 'Image generation failed');
-    err.status = response.status;
+    const errText = await response.text();
+    const err = new Error(`Image generation failed: ${errText}`);
+    err.status = response.status; // preserves 429, 503, etc.
     throw err;
   }
 
-  const parts = data.candidates?.[0]?.content?.parts || [];
-  const imagePart = parts.find((p) => p.inlineData);
+  const arrayBuffer = await response.arrayBuffer();
+  const base64 = Buffer.from(arrayBuffer).toString("base64");
+  const contentType = response.headers.get("content-type") || "image/png";
 
-  if (!imagePart) throw new Error('No image returned by the model');
-
-  return {
-    base64: imagePart.inlineData.data,
-    mimeType: imagePart.inlineData.mimeType,
-  };
+  return { url: `data:${contentType};base64,${base64}` };
 }
 
 module.exports = { generateImage };
