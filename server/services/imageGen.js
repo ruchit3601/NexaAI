@@ -1,4 +1,4 @@
-const HF_API_URL = "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell";
+const HF_API_URL = "https://router.huggingface.co/fal-ai/models/black-forest-labs/FLUX.1-schnell";
 async function generateImage(prompt) {
   if (!prompt) {
     throw new Error("Prompt is required");
